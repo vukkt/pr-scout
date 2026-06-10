@@ -11,7 +11,7 @@ function createClient(): OpenAI {
   return new OpenAI({ apiKey, baseURL: "https://api.groq.com/openai/v1" });
 }
 
-function parseScore(raw: string): Score {
+export function parseScore(raw: string): Score {
   // Strip markdown code fences if the model wraps its output
   const cleaned = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
 

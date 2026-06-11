@@ -29,7 +29,18 @@ function handleGitHubError(error: unknown, owner: string, repo: string): never {
   throw error;
 }
 
-export async function fetchIssues(owner: string, repo: string): Promise<Issue[]> {
+export interface FetchIssuesOptions {
+  label: string;
+  limit: number;
+}
+
+export const DEFAULT_LABEL = "good first issue";
+
+export async function fetchIssues(
+  owner: string,
+  repo: string,
+  options: FetchIssuesOptions = { label: DEFAULT_LABEL, limit: 50 }
+): Promise<Issue[]> {
   const octokit = createClient();
 
   try {
@@ -37,11 +48,11 @@ export async function fetchIssues(owner: string, repo: string): Promise<Issue[]>
       owner,
       repo,
       state: "open",
-      labels: "good first issue",
+      labels: options.label,
       assignee: "none",
       sort: "created",
       direction: "desc",
-      per_page: 50,
+      per_page: options.limit,
     });
 
     // listForRepo returns PRs too — filter them out

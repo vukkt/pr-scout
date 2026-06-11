@@ -58,24 +58,60 @@ No additional scopes are needed for public repositories.
 ## Usage
 
 ```bash
-pr-scout <owner>/<repo>
+pr-scout <owner>/<repo> [options]
 ```
+
+| Flag                  | Default                   | Description                                                        |
+| --------------------- | ------------------------- | ------------------------------------------------------------------ |
+| `-l, --label <label>` | `good first issue`        | Issue label to filter by                                           |
+| `-n, --limit <count>` | `50`                      | Max issues to fetch and score (1–100)                              |
+| `-t, --top <count>`   | `10`                      | Number of results shown in the picker                              |
+| `-m, --model <model>` | `llama-3.3-70b-versatile` | Groq model id                                                      |
+| `--json`              | off                       | Print scored results as JSON to stdout (no interactive picker)     |
 
 Examples:
 
 ```bash
+# Default run: top 10 "good first issue" tickets from a repo
 pr-scout storybookjs/storybook
-pr-scout vitejs/vite
-pr-scout vercel/next.js
+
+# Different label, fewer issues, show the top 5
+pr-scout vitejs/vite --label "help wanted" --limit 25 --top 5
+
+# Script it: grab the numbers of every green-verdict issue
+pr-scout vercel/next.js --json | jq '.issues[] | select(.verdict == "green") | .number'
 ```
 
 pr-scout will:
 
-1. Fetch up to 50 open, unassigned issues labeled `good first issue`
+1. Fetch up to `--limit` open, unassigned issues with the `--label` label
 2. Pull repository health signals (stars, recent commits, merged PRs, CONTRIBUTING.md)
-3. Score each issue using Llama 3.3 70B via Groq
-4. Present the top 10 results as an interactive list
+3. Score each issue using the selected Groq model (Llama 3.3 70B by default)
+4. Present the top `--top` results as an interactive list
 5. Open the selected issue in your default browser
+
+### JSON output
+
+With `--json`, pr-scout skips the interactive picker and prints all scored results to stdout, sorted by score descending:
+
+```json
+{
+  "repo": "owner/repo",
+  "label": "good first issue",
+  "model": "llama-3.3-70b-versatile",
+  "issues": [
+    {
+      "number": 123,
+      "title": "Fix typo in CLI help text",
+      "url": "https://github.com/owner/repo/issues/123",
+      "score": 9,
+      "verdict": "green",
+      "estimatedScope": "small",
+      "reasoning": "Clearly scoped one-line fix in an actively maintained repo."
+    }
+  ]
+}
+```
 
 ---
 
@@ -129,6 +165,15 @@ npm run build
 ```
 
 The compiled binary is written to `dist/index.js`.
+
+Run the type checker and unit tests:
+
+```bash
+npm run typecheck
+npm test
+```
+
+For the product lifecycle document — requirements, design decisions, quality strategy, and roadmap — see [docs/PRODUCT.md](docs/PRODUCT.md).
 
 ---
 

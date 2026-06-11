@@ -27,16 +27,17 @@ export function makeSpinner() {
 
 export async function promptIssueSelect(
   repo: string,
-  issues: ScoredIssue[]
+  issues: ScoredIssue[],
+  topCount = 10
 ): Promise<void> {
   intro(`pr-scout — ${repo}`);
 
   if (issues.length === 0) {
-    outro("No good first issues found for this repo.");
+    outro("No matching open issues found for this repo.");
     return;
   }
 
-  const top = issues.slice(0, 10);
+  const top = issues.slice(0, topCount);
 
   const selected = await select<ScoredIssue>({
     message: "Pick an issue to open  (↑↓ navigate · Enter select · Ctrl+C quit)",

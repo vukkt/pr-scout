@@ -48,11 +48,17 @@ export function parseScore(raw: string): Score {
   };
 }
 
-export async function evaluateIssue(issue: Issue, health: RepoHealth): Promise<Score> {
+export const DEFAULT_MODEL = "llama-3.3-70b-versatile";
+
+export async function evaluateIssue(
+  issue: Issue,
+  health: RepoHealth,
+  model: string = DEFAULT_MODEL
+): Promise<Score> {
   const client = createClient();
 
   const response = await client.chat.completions.create({
-    model: "llama-3.3-70b-versatile",
+    model,
     max_tokens: 256,
     temperature: 0,
     messages: [

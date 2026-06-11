@@ -1,6 +1,6 @@
 {
   "name": "pr-scout",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI that scores good first issues in any GitHub repo using an LLM — cuts through spam and finds the real ones",
   "type": "module",
   "bin": {

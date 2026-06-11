@@ -123,6 +123,29 @@ describe("evaluateIssue", () => {
     expect(request.messages[1].content).toContain("Fix typo in README");
   });
 
+  it("passes the requested model to the API, defaulting to llama-3.3-70b-versatile", async () => {
+    createMock.mockResolvedValue({
+      choices: [
+        {
+          message: {
+            content: JSON.stringify({
+              score: 7,
+              verdict: "yellow",
+              reasoning: "Reasonable starter task.",
+              estimatedScope: "medium",
+            }),
+          },
+        },
+      ],
+    });
+
+    await evaluateIssue(issue, health);
+    expect(createMock.mock.calls[0][0].model).toBe("llama-3.3-70b-versatile");
+
+    await evaluateIssue(issue, health, "llama-3.1-8b-instant");
+    expect(createMock.mock.calls[1][0].model).toBe("llama-3.1-8b-instant");
+  });
+
   it("throws when the model returns no content", async () => {
     createMock.mockResolvedValue({ choices: [] });
     await expect(evaluateIssue(issue, health)).rejects.toThrow(/invalid JSON/);

@@ -60,6 +60,19 @@ describe("fetchIssues", () => {
       createdAt: "2026-03-01T00:00:00Z",
       labels: ["good first issue", "bug"],
     });
+    expect(mocks.listForRepo).toHaveBeenCalledWith(
+      expect.objectContaining({ labels: "good first issue", per_page: 50 })
+    );
+  });
+
+  it("passes a custom label and limit to the GitHub API", async () => {
+    mocks.listForRepo.mockResolvedValue({ data: [] });
+
+    await fetchIssues("acme", "widget", { label: "help wanted", limit: 25 });
+
+    expect(mocks.listForRepo).toHaveBeenCalledWith(
+      expect.objectContaining({ labels: "help wanted", per_page: 25 })
+    );
   });
 
   it("translates a 404 into a friendly error", async () => {
